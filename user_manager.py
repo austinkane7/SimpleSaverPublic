@@ -43,6 +43,17 @@ class UserManager:
                 return user
         return None
 
+    def update_user_info(self, email, first_name, last_name, new_password=None):
+        if new_password:
+            hashed = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+            query = "UPDATE users SET first_name = ?, last_name = ?, password = ? WHERE email = ?"
+            self.conn.execute(query, (first_name, last_name, hashed, email))
+        else:
+            query = "UPDATE users SET first_name = ?, last_name = ? WHERE email = ?"
+            self.conn.execute(query, (first_name, last_name, email))
+        self.conn.commit()
+        return True
+
 if __name__ == "__main__":
     um = UserManager()
     print("Register a new user:")
